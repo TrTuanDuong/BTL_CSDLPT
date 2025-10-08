@@ -1,4 +1,3 @@
-from django.http import JsonResponse
+from django.shortcuts import render
 
-def hello(request):
-    return JsonResponse({"message": "Hello Ông chủ"}, json_dumps_params={"ensure_ascii": False})
+# Create your views here.
