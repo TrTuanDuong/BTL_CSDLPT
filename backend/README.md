@@ -186,3 +186,160 @@ Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...
 ## 👥 Team
 
 Dự án BTL CSDL - PTIT
+
+
+## 💻 Hướng dẫn chạy dự án với PyCharm
+
+### 🚀 Cách 1: Sử dụng PyCharm Professional
+
+#### Bước 1: Mở dự án
+```
+File → Open → Chọn thư mục BTL_CSDL_PTIT/backend
+```
+
+#### Bước 2: Cấu hình Python Interpreter
+```
+File → Settings (Ctrl+Alt+S)
+→ Project → Python Interpreter
+→ Add Interpreter → Virtualenv Environment
+→ New environment
+→ Location: ./venv
+→ Base interpreter: Python 3.8+
+→ OK
+```
+
+#### Bước 3: Cài đặt dependencies
+```bash
+# Terminal trong PyCharm (Alt+F12)
+pip install -r requirements.txt
+```
+
+#### Bước 4: Cấu hình Django
+```
+File → Settings → Languages & Frameworks → Django
+→ ✅ Enable Django Support
+→ Django project root: [đường dẫn đến thư mục backend]
+→ Settings: config/settings.py
+→ Manage script: manage.py
+→ OK
+```
+
+#### Bước 5: Cấu hình Database (Optional)
+```
+View → Tool Windows → Database
+→ + → Data Source → PostgreSQL
+→ Nhập thông tin từ file .env
+→ Test Connection → OK
+```
+
+#### Bước 6: Tạo Django Run Configuration
+```
+Run → Edit Configurations
+→ + → Django Server
+→ Name: Cinema API Server
+→ Host: localhost
+→ Port: 8000
+→ Environment variables: Load from .env file
+→ Python interpreter: venv
+→ OK
+```
+
+#### Bước 7: Chạy Migration
+```bash
+# Terminal trong PyCharm
+python manage.py makemigrations
+python manage.py migrate
+python manage.py createsuperuser
+```
+
+#### Bước 8: Chạy Server
+```
+Run → Run 'Cinema API Server'
+# Hoặc click vào nút Run (Shift+F10)
+```
+
+### 🔧 Cách 2: PyCharm Community Edition
+
+#### Bước 1-3: Giống như PyCharm Professional
+
+#### Bước 4: Chạy bằng Terminal
+```bash
+# Terminal trong PyCharm (Alt+F12)
+# Kích hoạt virtual environment
+source venv/bin/activate  # macOS/Linux
+# venv\Scripts\activate   # Windows
+
+# Chạy migration
+python manage.py makemigrations
+python manage.py migrate
+python manage.py createsuperuser
+
+# Chạy server
+python manage.py runserver
+```
+
+#### Bước 5: Tạo Python Run Configuration
+```
+Run → Edit Configurations
+→ + → Python
+→ Name: Django Server
+→ Script path: manage.py
+→ Parameters: runserver
+→ Working directory: [thư mục backend]
+→ Python interpreter: venv
+→ OK
+```
+
+### 🎯 Ưu điểm PyCharm với Django:
+
+#### PyCharm Professional:
+- ✅ **Django integration** tích hợp sẵn
+- ✅ **Template debugging** cho Django templates
+- ✅ **Database browser** trực quan
+- ✅ **Model diagram** tự động generate
+- ✅ **Migration tools** với UI
+- ✅ **Django console** tích hợp
+- ✅ **URL mapping** visualization
+
+#### PyCharm Community:
+- ✅ **Python debugging** mạnh mẽ
+- ✅ **Git integration** tốt
+- ✅ **Code completion** thông minh
+- ✅ **Refactoring tools** đa dạng
+
+### 📋 Troubleshooting PyCharm:
+
+#### Lỗi "Django not detected":
+```
+File → Invalidate Caches and Restart
+```
+
+#### Lỗi Module not found:
+```
+File → Settings → Project → Python Interpreter
+→ Kiểm tra venv đã chọn đúng
+→ Reinstall packages nếu cần
+```
+
+#### Debug không hoạt động:
+```
+Run → Edit Configurations
+→ Kiểm tra Python interpreter path
+→ Working directory phải là thư mục backend
+```
+
+### 🔍 Tips sử dụng PyCharm hiệu quả:
+
+#### Shortcuts hữu ích:
+- `Ctrl+Shift+F10` - Run file hiện tại
+- `Shift+F10` - Run configuration cuối cùng
+- `Ctrl+F2` - Stop server
+- `Alt+F12` - Mở terminal
+- `Ctrl+Shift+A` - Find Action
+
+#### Debug Django:
+```python
+# Đặt breakpoint và chạy Debug mode
+# PyCharm sẽ dừng tại breakpoint trong API calls
+import pdb; pdb.set_trace()  # Hoặc dùng breakpoint UI
+```
