@@ -16,8 +16,8 @@ class Seat(models.Model):
     ]
     PRICE_MULTIPLIER = {
         STANDARD: 1.0,
-        VIP: 1.3,
-        COUPLE: 2.0,
+        VIP: 1.5,
+        COUPLE: 3.0,
     }
     seat_type = models.CharField(max_length=10, choices=SEAT_TYPE_CHOICES, default=STANDARD)
 
