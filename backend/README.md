@@ -1,345 +1,344 @@
 # 🎬 Hệ thống Bán Vé Rạp Chiếu Phim
 
-Dự án bài tập lớn CSDL - PTIT sử dụng Django REST Framework và PostgreSQL với JWT Authentication.
+Dự án bài tập lớn Cơ sở dữ liệu - Học viện PTIT sử dụng Django REST Framework và PostgreSQL với xác thực JWT.
 
-## 🚀 Cài đặt và chạy
+## 🚀 Cài đặt và chạy hệ thống
 
 ### Yêu cầu hệ thống
-- Python 3.8+
-- PostgreSQL 12+
-- pip
+- Python 3.8 trở lên
+- PostgreSQL 12 trở lên  
+- pip package manager
 
-### Cài đặt
+### Hướng dẫn cài đặt
 ```bash
-# Clone project
+# Tải mã nguồn
 git clone <repository-url>
 cd BTL_CSDL_PTIT/backend
 
-# Tạo virtual environment
+# Tạo môi trường ảo
 python -m venv venv
 source venv/bin/activate  # macOS/Linux
 # venv\Scripts\activate   # Windows
 
-# Cài đặt dependencies
+# Cài đặt thư viện
 pip install -r requirements.txt
 
-# Cấu hình database
+# Cấu hình cơ sở dữ liệu
 cp .env.example .env
-# Chỉnh sửa .env với thông tin DB của bạn
+# Chỉnh sửa file .env với thông tin DB của bạn
 
-# Migrate database
+# Tạo và áp dụng migration
 python manage.py makemigrations
 python manage.py migrate
 
-# Tạo superuser
+# Tạo tài khoản quản trị
 python manage.py createsuperuser
 
-# Chạy server
+# Khởi chạy máy chủ
 python manage.py runserver
 ```
 
-## 📊 Database Schema
-
-Hệ thống gồm 10 bảng chính:
-- **User** - Người dùng (customer, admin) với UUID primary key
-- **Movie** - Phim chiếu
-- **Genre** - Thể loại phim
-- **Auditorium** - Phòng chiếu
-- **Seat** - Ghế ngồi (standard/vip/couple)
-- **Showtime** - Suất chiếu
-- **Booking** - Đặt vé (auto-expire 10 phút)
-- **Ticket** - Vé (tính giá = base_price × seat_multiplier)
-- **Payment** - Thanh toán
-
-## 🔐 Authentication
-
-Hệ thống sử dụng **JWT (JSON Web Token)** authentication:
-- **Access Token**: 1 giờ
-- **Refresh Token**: 7 ngày
-- **Auto rotation**: Token mới mỗi lần refresh
-
-### JWT Endpoints:
-- `POST /api/auth/login/` - Đăng nhập, nhận JWT tokens
-- `POST /api/auth/refresh/` - Refresh access token
-- `POST /api/auth/verify/` - Verify token validity
-
-## 🏗️ Cấu trúc dự án
+## 🏗️ Cấu trúc dự án chi tiết
 
 ```
-backend/ — gốc dự án Django ạ
-├─ manage.py — chạy lệnh Django (runserver, migrate, createsuperuser) ạ
-├─ requirements.txt — danh sách thư viện để pip install -r ạ
-├─ .env.example — mẫu biến môi trường (SECRET_KEY, DB, ALLOWED_HOSTS) ạ
-├─ README.md — hướng dẫn cài đặt, chạy và cấu trúc ạ
-├─ config/ — cấu hình framework ạ
-│  ├─ settings.py — cấu hình Django/DRF, DB, timezone, JWT, AUTH_USER_MODEL ạ
-│  ├─ urls.py — route gốc, include api.routers + JWT auth endpoints ạ
-│  ├─ asgi.py — entry ASGI cho server async ạ
-│  └─ wsgi.py — entry WSGI cho server production ạ
-├─ api/ — lớp transport + ORM ạ
-│  ├─ models/ — định nghĩa bảng dữ liệu ạ
-│  │  ├─ user.py — User model với UUID, roles (user/super_admin) ạ
-│  │  ├─ movie.py — Movie model với title, duration, rating ạ
-│  │  ├─ genre.py — Genre model và MovieGenre M2M ạ
-│  │  ├─ auditorium.py — Auditorium với seat counts theo loại ạ
-│  │  ├─ seat.py — Seat với types và price multipliers ạ
-│  │  ├─ showtime.py — Showtime link movie + auditorium + time ạ
-│  │  ├─ booking.py — Booking với auto-expire mechanism ạ
-│  │  ├─ ticket.py — Ticket với auto-calculate price ạ
-│  │  └─ payment.py — Payment tracking với external IDs ạ
-│  ├─ serializers/ — map Model ↔ JSON và validate input ạ
-│  │  ├─ __init__.py — package init file ạ
-│  │  ├─ user.py — UserSerializer, UserCreateSerializer, ChangePasswordSerializer ạ
-│  │  └─ auth.py — CustomTokenObtainPairSerializer cho JWT login ạ
-│  ├─ views/ — APIView/ViewSet xử lý request, gọi services ạ
-│  │  ├─ __init__.py — package init file ạ
-│  │  └─ user.py — UserViewSet với CRUD + profile + JWT actions ạ
-│  ├─ permissions/ — phân quyền (RBAC), rule truy cập endpoint ạ
-│  ├─ routers.py — đăng ký DRF router + custom auth endpoints ạ
-│  └─ tasks/ — tác vụ nền liên quan app (vd: auto-cancel booking) ạ
-├─ services/ — nghiệp vụ thuần, không phụ thuộc DRF ạ
-│  ├─ booking.py — giữ ghế, tính tiền, confirm/cancel ạ
-│  ├─ payment.py — tạo/hoàn tất thanh toán, cập nhật trạng thái ạ
-│  └─ availability.py — tính ghế trống theo showtime ạ
-├─ common/ — tiện ích dùng chung ạ
-│  ├─ pagination.py — phân trang mặc định cho toàn API ạ
-│  ├─ exceptions.py — handler lỗi trả JSON thống nhất ạ
-│  └─ utils.py — hàm tiện ích (id, thời gian, …) ạ
-└─ tests/ — kiểm thử tự động ạ
-   └─ api/ — test unit/integration cho endpoint và luồng nghiệp vụ ạ
+backend/                                    # 📁 Thư mục gốc dự án Django
+├─ manage.py                               # 🔧 Script quản lý Django (runserver, migrate, createsuperuser)
+├─ requirements.txt                        # 📦 Danh sách thư viện phụ thuộc (DRF, PostgreSQL, JWT, v.v.)
+├─ README.md                              # 📖 Tài liệu hướng dẫn và mô tả dự án
+├─ .env.example                           # 🔒 File mẫu cấu hình môi trường (DB, secret keys)
+├─ config/                                # ⚙️ Cấu hình Django chính
+│  ├─ __init__.py                         # 📦 File đánh dấu package Python
+│  ├─ settings.py                         # 🔧 Cài đặt chính (DB, JWT, DRF, timezone, middleware)
+│  ├─ urls.py                             # 🌐 Định tuyến URL gốc + endpoints xác thực JWT
+│  ├─ wsgi.py                             # 🚀 Entry point WSGI cho production
+│  └─ asgi.py                             # ⚡ Entry point ASGI cho hỗ trợ bất đồng bộ
+├─ api/                                   # 🎯 Layer ứng dụng chính
+│  ├─ models/                             # 🗃️ Mô hình cơ sở dữ liệu (định nghĩa ORM)
+│  │  ├─ __init__.py                      # 📦 Export các model
+│  │  ├─ user.py                          # 👤 Model người dùng (UUID, vai trò: user/admin)
+│  │  ├─ movie.py                         # 🎬 Model phim (tiêu đề, thời lượng, đánh giá)
+│  │  ├─ genre.py                         # 🏷️ Model thể loại phim
+│  │  ├─ movie_genre.py                   # 🔗 Quan hệ nhiều-nhiều Movie ↔ Genre
+│  │  ├─ auditorium.py                    # 🏢 Model phòng chiếu
+│  │  ├─ seat.py                          # 🪑 Model ghế ngồi (thường/vip/đôi + định giá)
+│  │  ├─ showtime.py                      # ⏰ Model suất chiếu (phiên chiếu phim + kiểm tra xung đột)
+│  │  ├─ booking.py                       # 📝 Model đặt vé (logic tự hủy sau 10 phút)
+│  │  ├─ ticket.py                        # 🎫 Model vé (tự động tính giá + logic check-in)
+│  │  └─ payment.py                       # 💳 Model thanh toán (logic hoàn tiền + tích hợp bên ngoài)
+│  ├─ serializers/                        # 🔄 API Serializers (chuyển đổi Model ↔ JSON)
+│  │  ├─ __init__.py                      # 📦 Export các serializer
+│  │  ├─ user.py                          # 👤 Serializer CRUD người dùng + đổi mật khẩu
+│  │  ├─ auth.py                          # 🔐 Serializer đăng nhập JWT + token tùy chỉnh
+│  │  ├─ movie.py                         # 🎬 Serializer CRUD phim + liên kết thể loại
+│  │  ├─ auditorium.py                    # 🏢 Serializer phòng chiếu + tự động tạo ghế
+│  │  ├─ showtime.py                      # ⏰ Serializer CRUD suất chiếu + kiểm tra xung đột
+│  │  ├─ booking.py                       # 📝 Serializer đặt vé + kiểm tra ghế + thời gian còn lại
+│  │  └─ payment.py                       # 💳 Serializer xử lý thanh toán + hoàn tiền
+│  ├─ views/                              # 🎮 API ViewSets (xử lý request + logic nghiệp vụ)
+│  │  ├─ __init__.py                      # 📦 Export các view
+│  │  ├─ user.py                          # 👤 Quản lý người dùng + profile + đăng xuất JWT
+│  │  ├─ movie.py                         # 🎬 CRUD phim + tìm kiếm + lọc
+│  │  ├─ auditorium.py                    # 🏢 CRUD phòng chiếu + tái tạo ghế
+│  │  ├─ showtime.py                      # ⏰ CRUD suất chiếu + sơ đồ ghế + tỷ lệ lấp đầy + thống kê booking
+│  │  ├─ booking.py                       # 📝 CRUD đặt vé + hủy + lịch sử + sắp tới
+│  │  └─ payment.py                       # 💳 CRUD thanh toán + hoàn tiền + hóa đơn + thống kê
+│  ├─ tasks/                              # 🔄 Background Tasks (Celery - tương lai)
+│  │  └─ __init__.py                      # 📦 Export tasks (hiện tại trống)
+│  ├─ middleware.py                       # 🔄 Tự động dọn dẹp booking hết hạn (chạy mỗi request)
+│  ├─ permissions.py                      # 🛡️ Phân quyền tùy chỉnh (Admin, Owner, ReadOnly)
+│  ├─ routers.py                          # 🌐 Đăng ký DRF Router + định tuyến URL
+│  └─ admin.py                            # 🔧 Tùy chỉnh Django Admin
+├─ services/                              # 🧠 Layer logic nghiệp vụ (services tái sử dụng)
+│  ├─ availability.py                     # 🎯 Service tính toán ghế trống
+│  ├─ booking.py                          # 📝 Logic nghiệp vụ đặt vé (hiện tại trống)
+│  └─ payment.py                          # 💳 Service xử lý thanh toán (hiện tại trống)
+└─ common/                                # 🛠️ Tiện ích dùng chung
+   ├─ utils.py                            # 🔧 Các hàm tiện ích (hiện tại trống)
+   ├─ pagination.py                       # 📄 Class phân trang tùy chỉnh (hiện tại trống)
+   └─ exceptions.py                       # ⚠️ Xử lý exception tùy chỉnh (hiện tại trống)
 ```
 
-## 🔧 Tech Stack
+## 📊 Lược đồ cơ sở dữ liệu & mối quan hệ
 
-- **Backend**: Django REST Framework
-- **Database**: PostgreSQL
-- **Authentication**: JWT (djangorestframework-simplejwt)
-- **API**: RESTful API với auto-generated documentation
+### **🗃️ Các Model chính:**
+- **User** (`UUID`) - Xác thực + phân quyền theo vai trò (user/admin)
+- **Movie** (`UUID`) - Catalog phim với thể loại (quan hệ M2M)
+- **Auditorium** (`UUID`) - Phòng chiếu với cấu hình ghế ngồi
+- **Seat** (`UUID`) - Ghế đơn lẻ với bậc giá (thường/vip/đôi)
+- **Showtime** (`UUID`) - Phiên chiếu phim với phát hiện xung đột
+- **Booking** (`UUID`) - Đặt chỗ với **tự động hết hạn sau 10 phút**
+- **Ticket** (`UUID`) - Vé ghế đơn lẻ với định giá động
+- **Payment** (`UUID`) - Ghi nhận giao dịch với khả năng hoàn tiền
 
-## 📝 Features
-
-### ✅ Đã hoàn thành
-- Database models với relationships đầy đủ
-- JWT Authentication system
-- User management (CRUD, profile, password change)
-- Auto seat pricing theo loại ghế
-- Booking expiry mechanism
-- Custom User model với UUID
-
-### 🚧 Đang phát triển
-- Movie, Showtime, Booking API endpoints
-- Payment integration
-- Admin dashboard enhancements
-- API documentation với Swagger
-
-## 🧪 Testing
-
-```bash
-# Chạy tests
-python manage.py test
-
-# Test coverage
-coverage run --source='.' manage.py test
-coverage report
+### **🔗 Mối quan hệ chính:**
+```
+User 1:N Booking 1:N Ticket N:1 Seat
+Movie 1:N Showtime N:1 Auditorium 1:N Seat  
+Booking 1:1 Payment
+Movie N:M Genre (qua MovieGenre)
 ```
 
-## 📚 API Documentation
+## ⏰ Hệ thống tự động hết hạn (10 phút)
 
-### User Endpoints:
-- `GET/POST /api/users/` - List/Create users
-- `GET /api/users/profile/` - User profile
-- `PUT /api/users/update_profile/` - Update profile
-- `POST /api/users/change_password/` - Change password
-- `GET /api/users/my_bookings/` - User's bookings
+### **🔄 Quy trình hoạt động:**
+1. **Tạo Booking** → `expires_at = now() + 10 phút`
+2. **Kiểm tra Middleware** → Tự động hủy booking hết hạn trên mỗi request
+3. **Đếm ngược thời gian thực** → API trả về `time_remaining` tính bằng giây
+4. **Tự động dọn dẹp** → Ghế trở về trạng thái available sau khi hết hạn
 
-### Auth Endpoints:
-- `POST /api/auth/login/` - JWT login
-- `POST /api/auth/refresh/` - Refresh token
-- `POST /api/auth/verify/` - Verify token
+### **📍 Vị trí triển khai:**
+- **Logic Model**: `api/models/booking.py` - method `save()` đặt thời hạn
+- **Middleware**: `api/middleware.py` - dọn dẹp nền
+- **Phản hồi API**: `api/serializers/booking.py` - đếm ngược thời gian thực
 
-### Admin Panel:
-- http://localhost:8000/admin/ - Django admin interface
+## 🔐 Xác thực & phân quyền
 
-## 🔐 JWT Usage
+### **🎫 Xác thực JWT:**
+- **Access Token**: Hết hạn sau 1 giờ
+- **Refresh Token**: 7 ngày với tự động xoay vòng
+- **Middleware**: `BookingExpiryMiddleware` + kiểm tra JWT
 
-### Login và nhận tokens:
-```bash
-POST /api/auth/login/
-{
-  "username": "admin",
-  "password": "admin"
-}
+### **👥 Phân quyền theo vai trò:**
 
-Response:
-{
-  "access": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
-  "refresh": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
-  "user": {...}
-}
-```
-
-### Sử dụng access token:
-```bash
-Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...
-```
-
-## 👥 Team
-
-Dự án BTL CSDL - PTIT
-
-
-## 💻 Hướng dẫn chạy dự án với PyCharm
-
-### 🚀 Cách 1: Sử dụng PyCharm Professional
-
-#### Bước 1: Mở dự án
-```
-File → Open → Chọn thư mục BTL_CSDL_PTIT/backend
-```
-
-#### Bước 2: Cấu hình Python Interpreter
-```
-File → Settings (Ctrl+Alt+S)
-→ Project → Python Interpreter
-→ Add Interpreter → Virtualenv Environment
-→ New environment
-→ Location: ./venv
-→ Base interpreter: Python 3.8+
-→ OK
-```
-
-#### Bước 3: Cài đặt dependencies
-```bash
-# Terminal trong PyCharm (Alt+F12)
-pip install -r requirements.txt
-```
-
-#### Bước 4: Cấu hình Django
-```
-File → Settings → Languages & Frameworks → Django
-→ ✅ Enable Django Support
-→ Django project root: [đường dẫn đến thư mục backend]
-→ Settings: config/settings.py
-→ Manage script: manage.py
-→ OK
-```
-
-#### Bước 5: Cấu hình Database (Optional)
-```
-View → Tool Windows → Database
-→ + → Data Source → PostgreSQL
-→ Nhập thông tin từ file .env
-→ Test Connection → OK
-```
-
-#### Bước 6: Tạo Django Run Configuration
-```
-Run → Edit Configurations
-→ + → Django Server
-→ Name: Cinema API Server
-→ Host: localhost
-→ Port: 8000
-→ Environment variables: Load from .env file
-→ Python interpreter: venv
-→ OK
-```
-
-#### Bước 7: Chạy Migration
-```bash
-# Terminal trong PyCharm
-python manage.py makemigrations
-python manage.py migrate
-python manage.py createsuperuser
-```
-
-#### Bước 8: Chạy Server
-```
-Run → Run 'Cinema API Server'
-# Hoặc click vào nút Run (Shift+F10)
-```
-
-### 🔧 Cách 2: PyCharm Community Edition
-
-#### Bước 1-3: Giống như PyCharm Professional
-
-#### Bước 4: Chạy bằng Terminal
-```bash
-# Terminal trong PyCharm (Alt+F12)
-# Kích hoạt virtual environment
-source venv/bin/activate  # macOS/Linux
-# venv\Scripts\activate   # Windows
-
-# Chạy migration
-python manage.py makemigrations
-python manage.py migrate
-python manage.py createsuperuser
-
-# Chạy server
-python manage.py runserver
-```
-
-#### Bước 5: Tạo Python Run Configuration
-```
-Run → Edit Configurations
-→ + → Python
-→ Name: Django Server
-→ Script path: manage.py
-→ Parameters: runserver
-→ Working directory: [thư mục backend]
-→ Python interpreter: venv
-→ OK
-```
-
-### 🎯 Ưu điểm PyCharm với Django:
-
-#### PyCharm Professional:
-- ✅ **Django integration** tích hợp sẵn
-- ✅ **Template debugging** cho Django templates
-- ✅ **Database browser** trực quan
-- ✅ **Model diagram** tự động generate
-- ✅ **Migration tools** với UI
-- ✅ **Django console** tích hợp
-- ✅ **URL mapping** visualization
-
-#### PyCharm Community:
-- ✅ **Python debugging** mạnh mẽ
-- ✅ **Git integration** tốt
-- ✅ **Code completion** thông minh
-- ✅ **Refactoring tools** đa dạng
-
-### 📋 Troubleshooting PyCharm:
-
-#### Lỗi "Django not detected":
-```
-File → Invalidate Caches and Restart
-```
-
-#### Lỗi Module not found:
-```
-File → Settings → Project → Python Interpreter
-→ Kiểm tra venv đã chọn đúng
-→ Reinstall packages nếu cần
-```
-
-#### Debug không hoạt động:
-```
-Run → Edit Configurations
-→ Kiểm tra Python interpreter path
-→ Working directory phải là thư mục backend
-```
-
-### 🔍 Tips sử dụng PyCharm hiệu quả:
-
-#### Shortcuts hữu ích:
-- `Ctrl+Shift+F10` - Run file hiện tại
-- `Shift+F10` - Run configuration cuối cùng
-- `Ctrl+F2` - Stop server
-- `Alt+F12` - Mở terminal
-- `Ctrl+Shift+A` - Find Action
-
-#### Debug Django:
+#### **👤 Vai trò USER (Khách hàng):**
 ```python
-# Đặt breakpoint và chạy Debug mode
-# PyCharm sẽ dừng tại breakpoint trong API calls
-import pdb; pdb.set_trace()  # Hoặc dùng breakpoint UI
+✅ Xem phim, suất chiếu, phòng chiếu (công khai)
+✅ Tạo/xem/hủy booking của riêng mình
+✅ Thanh toán, check-in vé
+✅ Xem lịch sử booking/thanh toán cá nhân
+❌ Không thể truy cập endpoint admin
+❌ Không thể xem dữ liệu của người khác
 ```
+
+#### **👨‍💼 Vai trò ADMIN (Quản trị viên):**
+```python
+✅ Tất cả quyền của USER +
+✅ CRUD phim, suất chiếu, phòng chiếu
+✅ Xem booking của tất cả người dùng
+✅ Truy cập thống kê tỷ lệ lấp đầy & doanh thu
+✅ Tái tạo sơ đồ ghế phòng chiếu
+✅ Xem phân tích booking chi tiết
+```
+
+## 🌐 Các endpoint API
+
+### **🔐 Xác thực:**
+```
+POST /api/auth/login/           # Đăng nhập JWT + thông tin user
+POST /api/auth/refresh/         # Làm mới access token
+POST /api/auth/verify/          # Xác minh tính hợp lệ của token
+POST /api/users/logout/         # Đưa refresh token vào blacklist
+```
+
+### **👤 Quản lý người dùng:**
+```
+GET/POST /api/users/            # Liệt kê/Tạo người dùng
+GET /api/users/profile/         # Profile người dùng hiện tại
+PUT /api/users/update_profile/  # Cập nhật profile
+POST /api/users/change_password/ # Đổi mật khẩu
+GET /api/users/my_bookings/     # Lịch sử booking của user
+```
+
+### **🎬 Catalog phim:**
+```
+GET/POST /api/movies/           # Liệt kê/Tạo phim (POST: chỉ admin)
+GET /api/movies/{id}/           # Chi tiết phim
+PUT/DELETE /api/movies/{id}/    # Cập nhật/Xóa phim (chỉ admin)
+GET /api/genres/                # Liệt kê tất cả thể loại
+```
+
+### **🏢 Quản lý phòng chiếu:**
+```
+GET/POST /api/auditoriums/      # Liệt kê/Tạo phòng chiếu (POST: chỉ admin)
+GET /api/auditoriums/{id}/      # Chi tiết phòng chiếu + sơ đồ ghế
+GET /api/auditoriums/{id}/seats/ # Hiển thị sơ đồ ghế
+POST /api/auditoriums/{id}/regenerate_seats/ # Tái tạo ghế (chỉ admin)
+```
+
+### **⏰ Lập lịch suất chiếu:**
+```
+GET/POST /api/showtimes/        # Liệt kê/Tạo suất chiếu (POST: chỉ admin)
+GET /api/showtimes/{id}/        # Chi tiết suất chiếu
+GET /api/showtimes/today/       # Suất chiếu hôm nay
+GET /api/showtimes/upcoming/    # 7 ngày tới
+GET /api/showtimes/by_movie/?movie_id={id} # Suất chiếu theo phim
+GET /api/showtimes/{id}/seats/  # Tình trạng ghế thời gian thực
+GET /api/showtimes/{id}/occupancy/ # Thống kê (chỉ admin)
+GET /api/showtimes/{id}/bookings/ # Danh sách booking (chỉ admin)
+POST /api/showtimes/{id}/check_seats/ # Kiểm tra ghế cụ thể
+```
+
+### **📝 Hệ thống booking:**
+```
+GET/POST /api/bookings/         # Liệt kê/Tạo booking
+GET /api/bookings/{id}/         # Chi tiết booking + thời gian còn lại
+POST /api/bookings/{id}/cancel/ # Hủy booking
+GET /api/bookings/history/      # Lịch sử booking của user
+GET /api/bookings/upcoming/     # Booking đã thanh toán sắp tới
+```
+
+### **🎫 Quản lý vé:**
+```
+GET /api/tickets/               # Vé của user
+GET /api/tickets/{id}/          # Chi tiết vé
+POST /api/tickets/{id}/check_in/ # Check-in tại rạp (30 phút trước suất chiếu)
+GET /api/tickets/?status=paid   # Lọc theo trạng thái
+```
+
+### **💳 Xử lý thanh toán:**
+```
+GET/POST /api/payments/         # Liệt kê/Tạo thanh toán
+GET /api/payments/{id}/         # Chi tiết thanh toán
+POST /api/payments/{id}/refund/ # Yêu cầu hoàn tiền (2 giờ trước suất chiếu)
+GET /api/payments/{id}/receipt/ # Tạo hóa đơn
+GET /api/payments/history/      # Lịch sử thanh toán với bộ lọc
+GET /api/payments/statistics/   # Thống kê thanh toán của user
+```
+
+## 🎯 Luồng logic nghiệp vụ
+
+### **📱 Hành trình khách hàng:**
+```
+1. Duyệt Phim → 2. Chọn Suất chiếu → 3. Chọn Ghế → 4. Tạo Booking
+   ↓ (đếm ngược 10 phút bắt đầu)
+5. Thanh toán → 6. Nhận Vé → 7. Check-in tại rạp
+```
+
+### **⚖️ Quy tắc nghiệp vụ chính:**
+- **Hết hạn Booking**: 10 phút để hoàn thành thanh toán
+- **Cửa sổ Check-in**: 30 phút trước suất chiếu
+- **Hạn hoàn tiền**: 2 giờ trước suất chiếu
+- **Định giá ghế**: Động dựa trên loại ghế (thường/vip/đôi)
+- **Ngăn xung đột**: Không có suất chiếu chồng chéo trong cùng phòng
+
+### **🔄 Quy trình tự động:**
+- **Dọn dẹp Booking hết hạn**: Middleware chạy nền
+- **Tính giá**: Tự động từ base_price × seat_multiplier
+- **Tính thời gian kết thúc**: start_time + movie_duration + 30 phút dọn dẹp
+- **Xoay vòng JWT Token**: Refresh token mới mỗi lần làm mới
+
+## 🧪 Testing & phát triển
+
+### **🔧 Lệnh phát triển:**
+```bash
+python manage.py runserver          # Khởi động dev server
+python manage.py makemigrations     # Tạo DB migration
+python manage.py migrate            # Áp dụng migration
+python manage.py createsuperuser    # Tạo user admin
+python manage.py shell              # Django shell để test
+```
+
+### **📊 Admin Panel:**
+- **URL**: `http://localhost:8000/admin/`
+- **Tính năng**: Quản lý user, truy cập DB trực tiếp, duyệt model
+
+### **🧪 Test API:**
+- **Base URL**: `http://localhost:8000/api/`
+- **Documentation**: DRF browsable API tự động tạo
+- **Auth Header**: `Authorization: Bearer {access_token}`
+
+## 🎛️ Cấu hình hệ thống
+
+### **⚙️ Cài đặt chính:**
+```python
+# Cấu hình JWT
+ACCESS_TOKEN_LIFETIME = 1 giờ
+REFRESH_TOKEN_LIFETIME = 7 ngày
+ROTATE_REFRESH_TOKENS = True
+
+# Quy tắc nghiệp vụ
+BOOKING_EXPIRY_MINUTES = 10
+CHECKIN_WINDOW_MINUTES = 30
+REFUND_DEADLINE_HOURS = 2
+
+# Cơ sở dữ liệu
+ENGINE = PostgreSQL
+TIMEZONE = Asia/Ho_Chi_Minh
+```
+
+### **🛡️ Tính năng bảo mật:**
+- UUID primary key (không tuần tự, bảo mật)
+- JWT blacklisting khi đăng xuất
+- Kiểm soát truy cập theo vai trò
+- Validation & sanitization đầu vào
+- Bảo vệ SQL injection (Django ORM)
+
+## 🚀 Sẵn sàng triển khai
+
+### **📦 Cân nhắc production:**
+- Biến môi trường cho secrets
+- PostgreSQL connection pooling
+- Redis cho session/cache (tùy chọn)
+- Máy chủ Gunicorn WSGI sẵn sàng
+- Cấu hình phục vụ static file
+- Xử lý lỗi toàn diện
+
+### **🔒 File cấu hình môi trường (.env.example):**
+```bash
+# Cơ sở dữ liệu
+DATABASE_NAME=cinema_booking
+DATABASE_USER=postgres
+DATABASE_PASSWORD=your_password
+DATABASE_HOST=localhost
+DATABASE_PORT=5432
+
+# Bảo mật
+SECRET_KEY=your-secret-key-here
+DEBUG=True
+
+# JWT
+JWT_SECRET_KEY=your-jwt-secret-key
+```
+
+---
+
+## 👥 Nhóm & hỗ trợ
+
+**Dự án**: BTL Cơ sở dữ liệu - Học viện PTIT  
+**Công nghệ**: Django REST Framework + PostgreSQL + JWT  
+**Kiến trúc**: RESTful API với xác thực theo vai trò  
+**Tính năng đặc biệt**: Tình trạng ghế thời gian thực + hệ thống booking tự động hết hạn
+
+---
+
+*📝 Cập nhật lần cuối: Tháng 10 năm 2024*
