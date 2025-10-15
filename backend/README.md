@@ -12,7 +12,7 @@ Dự án bài tập lớn Cơ sở dữ liệu - Học viện PTIT sử dụng D
 ### Hướng dẫn cài đặt
 ```bash
 # Tải mã nguồn
-git clone <repository-url>
+git clone https://github.com/TrTuanDuong/BTL_CSDL_PTIT
 cd BTL_CSDL_PTIT/backend
 
 # Tạo môi trường ảo
