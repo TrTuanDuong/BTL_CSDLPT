@@ -43,8 +43,8 @@ class AuditoriumDetailSerializer(AuditoriumSerializer):
 class AuditoriumCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Auditorium
-        fields = ['name', 'standard_row_count', 'vip_row_count', 
-                 'couple_row_count', 'seats_per_row']
+        fields = ['name', 'standard_row_count', 'vip_row_count',
+                'couple_row_count', 'seats_per_row']
     
     def validate(self, data):
         total_rows = data['standard_row_count'] + data['vip_row_count'] + data['couple_row_count']

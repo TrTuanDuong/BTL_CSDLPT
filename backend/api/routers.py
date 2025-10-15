@@ -5,6 +5,7 @@ from api.views.movie import MovieViewSet, GenreViewSet
 from api.views.auditorium import AuditoriumViewSet, SeatViewSet
 from api.views.showtime import ShowtimeViewSet
 from api.views.booking import BookingViewSet, TicketViewSet
+from api.views.payment import PaymentViewSet
 
 # Router cho API endpoints
 router = DefaultRouter()
@@ -14,8 +15,9 @@ router.register(r'genres', GenreViewSet)
 router.register(r'auditoriums', AuditoriumViewSet)
 router.register(r'seats', SeatViewSet)
 router.register(r'showtime', ShowtimeViewSet)
-router.register(r'booking', BookingViewSet, basename='booking')
-router.register(r'ticket', TicketViewSet, basename='ticket')
+router.register(r'booking', BookingViewSet)
+router.register(r'ticket', TicketViewSet)
+router.register(r'payments', PaymentViewSet)
 
 urlpatterns = [
     # API endpoints
