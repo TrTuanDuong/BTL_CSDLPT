@@ -20,8 +20,8 @@ class BookingViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
     filterset_fields = ["status", "showtime"]
-    ordering_fields = ["booking_time"]
-    ordering = ["-booking_time"]
+    ordering_fields = ["created_at"]
+    ordering = ["-created_at"]
 
     def get_queryset(self):
         # User chỉ xem được booking của mình

@@ -15,7 +15,8 @@ class PaymentSerializer(serializers.ModelSerializer):
             "booking",
             "booking_info",
             "amount",
-            "payment_method",
+            #"payment_method",
+            "provider",
             "status",
             "payment_time",
             "transaction_id",
@@ -46,7 +47,7 @@ class PaymentCreateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Booking không thuộc về bạn")
 
         # Kiểm tra booking đang ở trạng thái reserved
-        if value.status != "reserved":
+        if value.status != "pending":
             raise serializers.ValidationError(
                 "Booking không ở trạng thái có thể thanh toán"
             )
@@ -79,7 +80,8 @@ class PaymentCreateSerializer(serializers.ModelSerializer):
             # Auto confirm (demo)
             payment.status = "completed"
             payment.paid_at = timezone.now()  # ← SỬA TỪ payment_time
-            payment.transaction_id = f"TXN_{payment.id.hex[:8].upper()}"
+            payment.external_id = f"TXN_{payment.id.hex[:8].upper()}"
+            #payment.transaction_id = f"TXN_{payment.id.hex[:8].upper()}"
             payment.save()
 
             # Update booking status

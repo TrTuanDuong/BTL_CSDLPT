@@ -57,7 +57,7 @@ class TicketSerializer(serializers.ModelSerializer):
         try:
             return {
                 "id": str(obj.booking.id),
-                "booking_time": obj.booking.booking_time,
+                "booking_time": obj.booking.created_at,
                 "status": obj.booking.status,
                 "total_amount": obj.booking.total_amount,
             }
@@ -80,7 +80,8 @@ class BookingSerializer(serializers.ModelSerializer):
             "user",
             "showtime",
             "showtime_info",
-            "booking_time",
+            #"booking_time",
+            "created_at",
             "total_amount",
             "status",
             "tickets",

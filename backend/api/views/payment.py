@@ -16,9 +16,9 @@ class PaymentViewSet(viewsets.ModelViewSet):
     queryset = Payment.objects.all()
     permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
-    filterset_fields = ['status', 'payment_method']
-    ordering_fields = ['payment_time', 'amount']
-    ordering = ['-payment_time']
+    filterset_fields = ['status', 'provider']
+    ordering_fields = ['paid_at', 'amount']
+    ordering = ['-paid_at']
     
     def get_queryset(self):
         # User chỉ xem được payment của mình
@@ -83,7 +83,7 @@ class PaymentViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'])
     def history(self, request):
         """Lịch sử thanh toán"""
-        payments = self.get_queryset().order_by('-payment_time')
+        payments = self.get_queryset().order_by('-paid_at')
         
         # Filter theo status nếu có
         status_filter = request.query_params.get('status')
@@ -130,7 +130,7 @@ class PaymentViewSet(viewsets.ModelViewSet):
         )['amount__sum'] or 0
         
         # Phương thức thanh toán phổ biến
-        payment_methods = payments.values('payment_method').annotate(
+        payment_methods = payments.values('provider').annotate(
             count=models.Count('id')
         ).order_by('-count')
         

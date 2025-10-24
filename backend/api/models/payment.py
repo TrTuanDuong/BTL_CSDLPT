@@ -32,12 +32,11 @@ class Payment(models.Model):
         "api.Booking", on_delete=models.CASCADE, related_name="payment"
     )
     amount = models.DecimalField(max_digits=12, decimal_places=2)
-    # provider = models.CharField(
-    #     max_length=40, choices=PROVIDER_CHOICES, default=CREDIT_CARD
-    # )
+    provider = models.CharField(max_length=40, choices=PROVIDER_CHOICES, default=CREDIT_CARD)
+    
     external_id = models.CharField(max_length=80, blank=True, null=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=PENDING)
-    # paid_at = models.DateTimeField(blank=True, null=True)
+    paid_at = models.DateTimeField(blank=True, null=True)
     created_at = models.DateTimeField(
         auto_now_add=True, null=True, blank=True
     )  # ← Tạm null=True
