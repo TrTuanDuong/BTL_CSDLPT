@@ -1,0 +1,231 @@
+.movie-detail-page {
+  padding-bottom: 40px;
+}
+
+/* Movie Hero */
+.movie-hero {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 60px 0;
+  margin-bottom: 40px;
+}
+
+.movie-hero-content {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 40px;
+  align-items: start;
+}
+
+.movie-poster-large {
+  width: 300px;
+  height: 450px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+}
+
+.movie-poster-large img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.poster-placeholder-large {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 100px;
+  background: rgba(255,255,255,0.1);
+}
+
+.movie-details {
+  padding-top: 20px;
+}
+
+.movie-title {
+  font-size: 42px;
+  font-weight: bold;
+  margin-bottom: 24px;
+}
+
+.movie-meta-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.meta-item {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.meta-label {
+  font-weight: 600;
+  opacity: 0.9;
+}
+
+.meta-value {
+  opacity: 0.9;
+}
+
+.rating-badge {
+  background: rgba(255,255,255,0.2);
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-weight: bold;
+}
+
+.movie-description-detail h3 {
+  font-size: 20px;
+  margin-bottom: 12px;
+}
+
+.movie-description-detail p {
+  line-height: 1.8;
+  opacity: 0.9;
+}
+
+/* Showtimes Section */
+.showtimes-section {
+  background: white;
+  padding: 32px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.section-title {
+  font-size: 28px;
+  margin-bottom: 24px;
+  color: #333;
+}
+
+.date-selector {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.date-button {
+  padding: 12px 24px;
+  border: 2px solid #e2e8f0;
+  background: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
+  color: #333;
+}
+
+.date-button:hover {
+  border-color: #667eea;
+  color: #667eea;
+}
+
+.date-button.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-color: transparent;
+}
+
+.showtimes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.showtime-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  transition: all 0.3s;
+}
+
+.showtime-card:hover {
+  border-color: #667eea;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+}
+
+.showtime-info {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+}
+
+.showtime-time {
+  font-size: 20px;
+  font-weight: bold;
+  color: #667eea;
+}
+
+.showtime-auditorium {
+  color: #666;
+}
+
+.showtime-price {
+  font-weight: 600;
+  color: #333;
+}
+
+.btn-select-showtime {
+  padding: 10px 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-select-showtime:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+}
+
+.no-showtimes {
+  text-align: center;
+  padding: 40px;
+  color: #999;
+}
+
+@media (max-width: 768px) {
+  .movie-hero-content {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .movie-poster-large {
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+  }
+
+  .movie-title {
+    font-size: 28px;
+  }
+
+  .showtime-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .showtime-card {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .btn-select-showtime {
+    width: 100%;
+    margin-top: 12px;
+  }
+}

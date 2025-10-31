@@ -1,0 +1,261 @@
+.booking-history-page {
+  padding: 40px 0;
+  min-height: calc(100vh - 200px);
+}
+
+.page-header {
+  margin-bottom: 32px;
+}
+
+.page-header h1 {
+  font-size: 36px;
+  color: #333;
+}
+
+.filter-section {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  padding: 10px 20px;
+  border: 2px solid #e2e8f0;
+  background: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
+  color: #666;
+}
+
+.filter-btn:hover {
+  border-color: #667eea;
+  color: #667eea;
+}
+
+.filter-btn.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-color: transparent;
+}
+
+.bookings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.booking-card {
+  background: white;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: all 0.3s;
+}
+
+.booking-card:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+}
+
+.booking-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.booking-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.booking-title h3 {
+  font-size: 20px;
+  color: #333;
+}
+
+.booking-id {
+  font-size: 12px;
+  color: #999;
+  font-family: monospace;
+}
+
+.status-badge {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.status-pending {
+  background: #fef5e7;
+  color: #f39c12;
+}
+
+.status-paid {
+  background: #d5f4e6;
+  color: #27ae60;
+}
+
+.status-canceled {
+  background: #fadbd8;
+  color: #e74c3c;
+}
+
+.booking-details {
+  margin-bottom: 16px;
+}
+
+.detail-item {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 8px;
+  color: #666;
+}
+
+.detail-label {
+  font-weight: 600;
+  min-width: 140px;
+}
+
+.text-expired {
+  color: #e53e3e;
+  font-weight: 600;
+}
+
+.text-warning {
+  color: #f39c12;
+  font-weight: 600;
+}
+
+.time-remaining {
+  font-weight: bold;
+  color: #e53e3e;
+}
+
+.booking-tickets h4 {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 12px;
+}
+
+.tickets-grid {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ticket-badge {
+  padding: 6px 12px;
+  background: #667eea;
+  color: white;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.booking-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.booking-total {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.total-amount {
+  font-size: 20px;
+  font-weight: bold;
+  color: #667eea;
+}
+
+.booking-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.btn-pay-now {
+  padding: 10px 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.btn-pay-now:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.btn-pay-now:active {
+  transform: translateY(0);
+}
+
+.btn-cancel-booking {
+  padding: 8px 20px;
+  background: white;
+  color: #e53e3e;
+  border: 2px solid #e53e3e;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-cancel-booking:hover {
+  background: #e53e3e;
+  color: white;
+}
+
+.expired-notice {
+  color: #e53e3e;
+  font-weight: 600;
+  font-size: 14px;
+  font-style: italic;
+}
+
+.no-bookings {
+  text-align: center;
+  padding: 60px 20px;
+  color: #999;
+}
+
+@media (max-width: 768px) {
+  .booking-header {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .booking-footer {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+  }
+
+  .booking-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .btn-pay-now,
+  .btn-cancel-booking {
+    width: 100%;
+  }
+}
