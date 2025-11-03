@@ -106,6 +106,7 @@ export const showtimesAPI = {
   getByMovie: (movieId) => api.get('/api/showtime/by_movie/', { params: { movie_id: movieId } }),
   getToday: () => api.get('/api/showtime/today/'),
   getUpcoming: () => api.get('/api/showtime/upcoming/'),
+  adminAll: () => api.get('/api/showtime/admin_all/'), // ✅ THÊM: Endpoint phân nhóm theo trạng thái
   create: (data) => api.post('/api/showtime/', data),
   update: (id, data) => api.put(`/api/showtime/${id}/`, data),
   delete: (id) => api.delete(`/api/showtime/${id}/`),

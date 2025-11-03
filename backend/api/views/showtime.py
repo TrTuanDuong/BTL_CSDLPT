@@ -414,3 +414,51 @@ class ShowtimeViewSet(viewsets.ModelViewSet):
                 "can_book_all": all(seat["is_available"] for seat in seat_status),
             }
         )
+
+    @action(detail=False, methods=["get"], permission_classes=[IsAuthenticated])
+    def admin_all(self, request):
+        """✅ ADMIN: Xem tất cả showtime với trạng thái real-time"""
+        if not request.user.is_staff:
+            return Response(
+                {"error": "Chỉ admin mới có thể xem"},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        # Lấy TẤT CẢ showtime (không filter)
+        showtimes = (
+            Showtime.objects.select_related("movie", "auditorium")
+            .all()
+            .order_by("-start_time")
+        )
+
+        # Phân nhóm theo trạng thái
+        now = timezone.now()
+        showing = []  # Đang chiếu
+        upcoming = []  # Sắp chiếu
+        finished = []  # Đã kết thúc
+
+        for showtime in showtimes:
+            realtime = showtime.get_realtime_status()
+            data = ShowtimeSerializer(showtime).data
+            data["realtime_status"] = realtime
+
+            if realtime["status"] == "showing":
+                showing.append(data)
+            elif realtime["status"] == "finished":
+                finished.append(data)
+            else:
+                upcoming.append(data)
+
+        return Response(
+            {
+                "summary": {
+                    "total": showtimes.count(),
+                    "showing": len(showing),
+                    "upcoming": len(upcoming),
+                    "finished": len(finished),
+                },
+                "showing": showing,
+                "upcoming": upcoming,
+                "finished": finished,
+            }
+        )

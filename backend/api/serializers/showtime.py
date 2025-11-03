@@ -12,8 +12,11 @@ class ShowtimeSerializer(serializers.ModelSerializer):
     auditorium_name = serializers.CharField(source="auditorium.name", read_only=True)
     available_seats = serializers.SerializerMethodField()
     total_seats = serializers.SerializerMethodField()
-    occupancy_rate = serializers.SerializerMethodField()  # Thêm field này
-    booking_status = serializers.SerializerMethodField()  # Thêm field này
+    occupancy_rate = serializers.SerializerMethodField()
+    booking_status = serializers.SerializerMethodField()
+    realtime_status = (
+        serializers.SerializerMethodField()
+    )  # ✅ THÊM: Trạng thái real-time
 
     class Meta:
         model = Showtime
@@ -32,6 +35,7 @@ class ShowtimeSerializer(serializers.ModelSerializer):
             "total_seats",
             "occupancy_rate",
             "booking_status",
+            "realtime_status",  # ✅ THÊM field
         ]
 
     def get_available_seats(self, obj):
@@ -70,6 +74,10 @@ class ShowtimeSerializer(serializers.ModelSerializer):
             return "booking_closed"
         else:
             return "available"
+
+    def get_realtime_status(self, obj):
+        """✅ THÊM: Lấy trạng thái theo thời gian thực"""
+        return obj.get_realtime_status()
 
 
 class ShowtimeCreateSerializer(serializers.ModelSerializer):

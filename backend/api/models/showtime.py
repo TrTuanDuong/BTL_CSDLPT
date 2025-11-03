@@ -63,3 +63,32 @@ class Showtime(models.Model):
         booked_seats = total_seats - available_seats
 
         return round((booked_seats / total_seats) * 100, 1)
+
+    def get_realtime_status(self):
+        """Lấy trạng thái theo thời gian thực"""
+        from django.utils import timezone
+
+        now = timezone.now()
+
+        # Đã kết thúc
+        if now >= self.end_time:
+            return {"status": "finished", "label": "Đã kết thúc", "color": "gray"}
+
+        # Đang chiếu
+        elif now >= self.start_time and now < self.end_time:
+            return {"status": "showing", "label": "Đang chiếu", "color": "green"}
+
+        # Sắp chiếu
+        else:
+            from datetime import timedelta
+
+            time_until_start = (self.start_time - now).total_seconds() / 60  # phút
+
+            if time_until_start <= 30:
+                return {
+                    "status": "starting_soon",
+                    "label": f"Sắp chiếu ({int(time_until_start)} phút nữa)",
+                    "color": "orange",
+                }
+            else:
+                return {"status": "scheduled", "label": "Chưa chiếu", "color": "blue"}

@@ -4,6 +4,8 @@ import '../../styles/AdminPages.css';
 
 const AdminShowtimes = () => {
   const [showtimes, setShowtimes] = useState([]);
+  const [groupedShowtimes, setGroupedShowtimes] = useState(null); // ✅ THÊM: Dữ liệu phân nhóm
+  const [viewMode, setViewMode] = useState('grouped'); // ✅ THÊM: 'grouped' hoặc 'list'
   const [movies, setMovies] = useState([]);
   const [auditoriums, setAuditoriums] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -20,6 +22,9 @@ const AdminShowtimes = () => {
 
   useEffect(() => {
     fetchData();
+    // ✅ THÊM: Auto refresh mỗi 30 giây
+    const interval = setInterval(fetchData, 30000);
+    return () => clearInterval(interval);
   }, []);
 
   const fetchData = async () => {
@@ -30,6 +35,16 @@ const AdminShowtimes = () => {
         moviesAPI.getAll(),
         auditoriumsAPI.getAll(),
       ]);
+
+      // ✅ THÊM: Gọi endpoint admin_all để lấy dữ liệu phân nhóm
+      let grouped = null;
+      try {
+        const groupedRes = await showtimesAPI.adminAll();
+        grouped = groupedRes.data;
+        setGroupedShowtimes(grouped);
+      } catch (err) {
+        console.log('Admin all endpoint not available, using regular list');
+      }
 
       // Đảm bảo tất cả đều là array
       setShowtimes(Array.isArray(showtimesRes.data) ? showtimesRes.data : showtimesRes.data.results || []);
@@ -155,14 +170,76 @@ const AdminShowtimes = () => {
     return <div className="loading">Đang tải...</div>;
   }
 
+  // ✅ THÊM: Helper để render status badge với màu
+  const renderStatusBadge = (showtime) => {
+    const realtime = showtime.realtime_status;
+    if (!realtime) {
+      return <span className="status-badge">{showtime.status}</span>;
+    }
+
+    const colorMap = {
+      green: 'showing',
+      orange: 'starting-soon',
+      blue: 'scheduled',
+      gray: 'finished'
+    };
+
+    return (
+      <span className={`status-badge status-${colorMap[realtime.color] || 'default'}`}>
+        {realtime.label}
+      </span>
+    );
+  };
+
   return (
     <div className="admin-page">
       <div className="page-header">
         <h2>Quản lý Suất chiếu</h2>
-        <button className="btn-primary" onClick={() => setShowForm(true)}>
-          ➕ Thêm suất chiếu
-        </button>
+        <div style={{display: 'flex', gap: '10px'}}>
+          {/* ✅ THÊM: Toggle view mode */}
+          {groupedShowtimes && (
+            <div className="view-toggle">
+              <button 
+                className={`btn-toggle ${viewMode === 'grouped' ? 'active' : ''}`}
+                onClick={() => setViewMode('grouped')}
+              >
+                📊 Phân nhóm
+              </button>
+              <button 
+                className={`btn-toggle ${viewMode === 'list' ? 'active' : ''}`}
+                onClick={() => setViewMode('list')}
+              >
+                📋 Danh sách
+              </button>
+            </div>
+          )}
+          <button className="btn-primary" onClick={() => setShowForm(true)}>
+            ➕ Thêm suất chiếu
+          </button>
+        </div>
       </div>
+
+      {/* ✅ THÊM: Hiển thị summary */}
+      {groupedShowtimes && viewMode === 'grouped' && (
+        <div className="showtime-summary">
+          <div className="summary-card total">
+            <span className="count">{groupedShowtimes.summary.total}</span>
+            <span className="label">Tổng suất</span>
+          </div>
+          <div className="summary-card showing">
+            <span className="count">{groupedShowtimes.summary.showing}</span>
+            <span className="label">🟢 Đang chiếu</span>
+          </div>
+          <div className="summary-card upcoming">
+            <span className="count">{groupedShowtimes.summary.upcoming}</span>
+            <span className="label">🔵 Sắp chiếu</span>
+          </div>
+          <div className="summary-card finished">
+            <span className="count">{groupedShowtimes.summary.finished}</span>
+            <span className="label">⚫ Đã kết thúc</span>
+          </div>
+        </div>
+      )}
 
       {showForm && (
         <div className="modal-overlay" onClick={resetForm}>
@@ -271,6 +348,42 @@ const AdminShowtimes = () => {
         </div>
       )}
 
+      {/* ✅ THÊM: Hiển thị theo nhóm */}
+      {groupedShowtimes && viewMode === 'grouped' ? (
+        <div className="grouped-showtimes">
+          {/* Đang chiếu */}
+          {groupedShowtimes.showing.length > 0 && (
+            <div className="showtime-group">
+              <h3 className="group-title showing">🟢 Đang chiếu ({groupedShowtimes.showing.length})</h3>
+              {renderShowtimeTable(groupedShowtimes.showing)}
+            </div>
+          )}
+
+          {/* Sắp chiếu */}
+          {groupedShowtimes.upcoming.length > 0 && (
+            <div className="showtime-group">
+              <h3 className="group-title upcoming">🔵 Sắp chiếu ({groupedShowtimes.upcoming.length})</h3>
+              {renderShowtimeTable(groupedShowtimes.upcoming)}
+            </div>
+          )}
+
+          {/* Đã kết thúc */}
+          {groupedShowtimes.finished.length > 0 && (
+            <div className="showtime-group">
+              <h3 className="group-title finished">⚫ Đã kết thúc ({groupedShowtimes.finished.length})</h3>
+              {renderShowtimeTable(groupedShowtimes.finished)}
+            </div>
+          )}
+        </div>
+      ) : (
+        renderShowtimeTable(showtimes)
+      )}
+    </div>
+  );
+
+  // ✅ THÊM: Helper function để render table
+  function renderShowtimeTable(data) {
+    return (
       <div className="data-table">
         <table>
           <thead>
@@ -280,22 +393,36 @@ const AdminShowtimes = () => {
               <th>Thời gian</th>
               <th>Giá cơ bản</th>
               <th>Trạng thái</th>
+              <th>Ghế trống</th>
               <th>Thao tác</th>
             </tr>
           </thead>
           <tbody>
-            {showtimes.map((showtime) => (
+            {data.map((showtime) => (
               <tr key={showtime.id}>
                 <td>{getMovieName(showtime.movie)}</td>
                 <td>{getAuditoriumName(showtime.auditorium)}</td>
                 <td>
-                  {new Date(showtime.start_time).toLocaleString('vi-VN')}
+                  <div>
+                    <div>{new Date(showtime.start_time).toLocaleString('vi-VN')}</div>
+                    <small style={{color: '#666'}}>
+                      {new Date(showtime.end_time).toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'})}
+                    </small>
+                  </div>
                 </td>
                 <td>{parseInt(showtime.base_price).toLocaleString('vi-VN')}đ</td>
+                <td>{renderStatusBadge(showtime)}</td>
                 <td>
-                  <span className={`status-badge status-${showtime.status}`}>
-                    {showtime.status}
-                  </span>
+                  {showtime.available_seats !== undefined && (
+                    <span>
+                      {showtime.available_seats}/{showtime.total_seats}
+                      {showtime.occupancy_rate !== undefined && (
+                        <small style={{display: 'block', color: '#666'}}>
+                          ({showtime.occupancy_rate}% đã đặt)
+                        </small>
+                      )}
+                    </span>
+                  )}
                 </td>
                 <td>
                   <div className="action-buttons">
@@ -312,12 +439,12 @@ const AdminShowtimes = () => {
           </tbody>
         </table>
 
-        {showtimes.length === 0 && (
+        {data.length === 0 && (
           <div className="no-data">Chưa có suất chiếu nào</div>
         )}
       </div>
-    </div>
-  );
+    );
+  }
 };
 
 export default AdminShowtimes;
