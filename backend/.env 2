@@ -1,0 +1,37 @@
+# .env.example - THÊM ĐẦY ĐỦ CONFIG
+# Database
+DATABASE_NAME=cinema_booking
+DATABASE_USER=postgres
+DATABASE_PASSWORD=your_password
+DATABASE_HOST=127.0.0.1
+DATABASE_PORT=5432
+
+# Security
+SECRET_KEY=django-insecure-4&(ar8_vct6^cj)umf+wl#72ap4s+l%i^5f+rh9d&wov#ccew)
+DEBUG=True
+ALLOWED_HOSTS=localhost,127.0.0.1
+
+# JWT Settings
+JWT_ACCESS_TOKEN_LIFETIME=60  # minutes
+JWT_REFRESH_TOKEN_LIFETIME=10080  # 7 days in minutes
+
+# Business Logic
+BOOKING_EXPIRY_MINUTES=10
+CHECKIN_WINDOW_MINUTES=30
+REFUND_DEADLINE_HOURS=2
+
+# Email (Optional)
+EMAIL_BACKEND=django.core.mail.backends.console.EmailBackend
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_USE_TLS=True
+EMAIL_HOST_USER=your_email@gmail.com
+EMAIL_HOST_PASSWORD=your_app_password# 1. Đăng ký user mới
+curl -X POST http://localhost:8000/api/auth/login/ \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "admin",
+    "password": "admin123"
+  }'
+
+# Response: Lưu access_token để test tiếp

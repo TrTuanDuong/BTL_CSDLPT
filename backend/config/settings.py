@@ -82,7 +82,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'cinema',
+        'NAME': 'cinema_btl',
         'USER': 'trantuanduong',
         'PASSWORD': '',
         'HOST': '127.0.0.1',
@@ -172,3 +172,11 @@ SIMPLE_JWT = {
     'TOKEN_TYPE_CLAIM': 'token_type',
 }
 CORS_ALLOW_ALL_ORIGINS = True
+# Tắt migration auto-detect cho BTL
+MIGRATION_MODULES = {
+    'api': None,  # Không tạo migration cho app api
+    'auth': None,
+    'contenttypes': None,
+    'sessions': None,
+    'admin': None,
+}
