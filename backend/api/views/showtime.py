@@ -46,6 +46,12 @@ class ShowtimeViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = super().get_queryset()
 
+        # ✅ LOGIC MỚI: Chỉ hiển thị suất chiếu chưa bắt đầu (cho user)
+        # Admin vẫn thấy tất cả
+        if not self.request.user.is_authenticated or not self.request.user.is_staff:
+            # Lọc bỏ suất chiếu đã bắt đầu (start_time < now)
+            queryset = queryset.filter(start_time__gte=timezone.now())
+
         # Filter theo ngày nếu có query param
         date = self.request.query_params.get("date", None)
         if date:
@@ -275,7 +281,7 @@ class ShowtimeViewSet(viewsets.ModelViewSet):
                 {
                     "id": booking.id,
                     "user": booking.user.username,
-                    "booking_time": booking.booking_time,
+                    "created_at": booking.created_at,  # ✅ SỬA: booking_time -> created_at
                     "status": booking.status,
                     "total_amount": booking.total_amount,
                     "tickets_count": booking.tickets.count(),
