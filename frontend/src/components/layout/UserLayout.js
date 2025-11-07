@@ -25,13 +25,13 @@ const UserLayout = () => {
               <Link to="/" className="nav-link">Phim</Link>
               {user && (
                 <>
-                  <Link to="/bookings" className="nav-link">Vé của tôi</Link>
+                  <Link to="/bookings" className="nav-link">Vé </Link>
                   <Link to="/profile" className="nav-link">Tài khoản</Link>
                 </>
               )}
               {isAdmin && (
                 <Link to="/admin" className="nav-link admin-link">
-                  Quản trị
+                  Quản lý
                 </Link>
               )}
             </nav>

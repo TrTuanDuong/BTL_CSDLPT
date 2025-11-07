@@ -166,14 +166,11 @@ class BookingCreateSerializer(serializers.ModelSerializer):
             total_amount = 0
             seats = Seat.objects.filter(id__in=seat_ids)
 
+            from decimal import Decimal
             for seat in seats:
                 # Tính giá vé theo loại ghế
-                try:
-                    multiplier = seat.PRICE_MULTIPLIER[seat.seat_type]
-                    price = showtime.base_price * multiplier
-                except Exception as e:
-                    print(f"Error calculating price: {e}")
-                    price = showtime.base_price
+                multiplier = seat.PRICE_MULTIPLIER.get(seat.seat_type, 1.0)
+                price = showtime.base_price * Decimal(str(multiplier))
 
                 ticket = Ticket.objects.create(
                     booking=booking,

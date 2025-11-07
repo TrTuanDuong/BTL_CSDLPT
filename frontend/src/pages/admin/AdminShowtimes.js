@@ -67,8 +67,8 @@ const AdminShowtimes = () => {
 
     // Auto calculate end_time when start_time or movie changes
     if (name === 'start_time' || name === 'movie') {
-      calculateEndTime(name === 'movie' ? value : formData.movie, 
-                       name === 'start_time' ? value : formData.start_time);
+      calculateEndTime(name === 'movie' ? value : formData.movie,
+                      name === 'start_time' ? value : formData.start_time);
     }
   };
 
