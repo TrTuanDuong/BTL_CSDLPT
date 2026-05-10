@@ -4,6 +4,30 @@ import os
 import sys
 
 
+# Patch mssql-django để hỗ trợ SSL options
+def patch_mssql_django():
+    """Patch mssql-django để thêm Encrypt=no"""
+    try:
+        import pyodbc
+        original_connect = pyodbc.connect
+        
+        def patched_connect(connection_string, **kwargs):
+            # Nếu chưa có Encrypt, thêm Encrypt=no
+            if 'Encrypt' not in connection_string:
+                if connection_string.endswith(';'):
+                    connection_string += 'Encrypt=no;'
+                else:
+                    connection_string += ';Encrypt=no;'
+            return original_connect(connection_string, **kwargs)
+        
+        pyodbc.connect = patched_connect
+    except Exception:
+        pass
+
+
+patch_mssql_django()
+
+
 def main():
     """Run administrative tasks."""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')

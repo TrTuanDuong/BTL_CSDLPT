@@ -81,12 +81,12 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'cinema_btl',
-        'USER': 'trantuanduong',
-        'PASSWORD': '',
-        'HOST': '127.0.0.1',
-        'PORT': '5432',
+        'ENGINE': 'mssql',
+        'NAME': 'ql_rap_phim',
+        'USER': 'sa',
+        'PASSWORD': '123456',
+        'HOST': '100.82.175.92',
+        'PORT': '1433',
     }
 }
 
