@@ -35,12 +35,49 @@
   align-items: start;
 }
 
-/* Seats Section */
 .seats-section {
   background: white;
   padding: 32px;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* Price Guide */
+.price-guide {
+  background: linear-gradient(135deg, #f3f4f6 0%, #ffffff 100%);
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  border-left: 4px solid #667eea;
+}
+
+.price-guide h4 {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.price-items {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.price-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: #666;
+}
+
+.price-seat {
+  width: 24px;
+  height: 24px;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  flex-shrink: 0;
 }
 
 .screen {
@@ -67,7 +104,7 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  margin-bottom: 24px;
+  margin-bottom: 12px;
 }
 
 .seat-row {
@@ -115,23 +152,41 @@
 .seat-standard,
 .seat.seat-standard {
   border-color: #48bb78;
+  background: linear-gradient(135deg, #e6ffed 0%, #c7ffd8 100%) !important;
   color: #000 !important; /* Màu đen đậm cho số ghế */
-  background: #fff;
+  font-weight: 700;
+}
+
+.seat-standard:hover {
+  background: linear-gradient(135deg, #d0ffd8 0%, #b0ffcc 100%) !important;
+  border-color: #38a169;
 }
 
 .seat-vip,
 .seat.seat-vip {
   border-color: #f6ad55;
+  background: linear-gradient(135deg, #ffe8b8 0%, #ffdd9b 100%) !important;
   color: #000 !important; /* Màu đen đậm cho số ghế */
-  background: #fff;
+  font-weight: 700;
+}
+
+.seat-vip:hover {
+  background: linear-gradient(135deg, #ffdda0 0%, #ffd280 100%) !important;
+  border-color: #ed8936;
 }
 
 .seat-couple,
 .seat.seat-couple {
   border-color: #fc8181;
   width: 76px;
+  background: linear-gradient(135deg, #ffe5e5 0%, #ffcccc 100%) !important;
   color: #000 !important; /* Màu đen đậm cho số ghế */
-  background: #fff;
+  font-weight: 700;
+}
+
+.seat-couple:hover {
+  background: linear-gradient(135deg, #ffd4d4 0%, #ffb3b3 100%) !important;
+  border-color: #f56565;
 }
 
 /* Ghế đang chọn */
@@ -154,25 +209,31 @@
 /* Seat Legend */
 .seat-legend {
   display: flex;
-  gap: 20px;
+  gap: 24px;
   justify-content: center;
-  padding-top: 20px;
-  border-top: 1px solid #e2e8f0;
+  padding: 16px 20px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  background: #f9fafb;
   flex-wrap: wrap;
+  margin-bottom: 24px;
+  margin-top: 24px;
 }
 
 .legend-item {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   font-size: 14px;
-  color: #666;
+  color: #333;
+  font-weight: 500;
 }
 
 .legend-item .seat {
-  width: 24px;
-  height: 24px;
-  font-size: 10px;
+  width: 32px;
+  height: 32px;
+  font-size: 11px;
+  border-width: 2px;
 }
 
 /* Booking Summary */

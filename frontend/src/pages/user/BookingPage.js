@@ -177,6 +177,24 @@ const handleBooking = async () => {
 
         <div className="booking-content">
           <div className="seats-section">
+            <div className="price-guide">
+              <h4>💰 Bảng giá theo loại ghế</h4>
+              <div className="price-items">
+                <div className="price-item">
+                  <div className="price-seat seat-standard"></div>
+                  <span>Ghế Thường: <strong>{showtime?.base_price?.toLocaleString('vi-VN')}đ</strong></span>
+                </div>
+                <div className="price-item">
+                  <div className="price-seat seat-vip"></div>
+                  <span>Ghế VIP: <strong>{(showtime?.base_price * 1.0)?.toLocaleString('vi-VN')}đ</strong></span>
+                </div>
+                <div className="price-item">
+                  <div className="price-seat seat-couple"></div>
+                  <span>Ghế Đôi: <strong>{(showtime?.base_price * 1.2)?.toLocaleString('vi-VN')}đ</strong></span>
+                </div>
+              </div>
+            </div>
+
             <div className="screen">
               <div className="screen-label">Màn hình</div>
             </div>
