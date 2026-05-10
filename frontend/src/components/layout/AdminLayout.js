@@ -20,6 +20,11 @@ const AdminLayout = () => {
     { path: '/admin/genres', label: 'Quản lý Thể loại', icon: '🏷️' },
     { path: '/admin/auditoriums', label: 'Quản lý Phòng chiếu', icon: '🎭' },
     { path: '/admin/showtimes', label: 'Quản lý Suất chiếu', icon: '⏰' },
+    { path: '/admin/branches', label: 'Quản lý Chi nhánh', icon: '🏢' },
+    { path: '/admin/branch-reports', label: 'Báo cáo Chi nhánh', icon: '📈' },
+    { path: '/admin/staff', label: 'Phân công Staff', icon: '👨‍💼' },
+    { path: '/admin/users', label: 'Quản lý Người dùng', icon: '👥' },
+    { path: '/admin/reports', label: 'Báo cáo Hệ thống', icon: '📈' },
   ];
 
   return (

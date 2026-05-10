@@ -26,21 +26,15 @@ pip install -r requirements.txt
 
 ---
 
-### **Bước 2: Chạy script setup tự động**
+### **Bước 2: Khởi động backend**
 
 ```bash
-# Tạo database cinema_btl + admin user
-./setup.sh
+cd backend
+source .venv/bin/activate
+python manage.py runserver 0.0.0.0:8000
 ```
 
-**Script này sẽ tự động:**
-
-- ✅ Xóa database cũ (nếu có)
-- ✅ Tạo database mới `cinema_btl`
-- ✅ Import schema từ `schema.sql`
-- ✅ Cập nhật `config/settings.py` tự động
-- ✅ Fake Django migrations
-- ✅ Tạo admin user: `admin/admin123`
+Project hiện kết nối trực tiếp đến SQL Server `ql_rap_phim`, nên không cần script tạo schema cục bộ.
 
 ---
 
@@ -176,13 +170,7 @@ User.objects.filter(is_superuser=True)
 
 ## 🔄 RESET DATABASE (KHI CẦN)
 
-```bash
-# Chạy lại script setup
-./setup.sh
-
-# Seed lại data mẫu
-python seed_demo_data.py
-```
+Sử dụng SQL Server hiện có; nếu cần seed lại data, tạo script seed riêng theo schema `api_*` thay vì chạy `setup.sh` cũ.
 
 ---
 
@@ -222,7 +210,7 @@ backend/                                    # 📁 Thư mục gốc dự án Dja
 ├─ api/                                   # 🎯 Layer ứng dụng chính
 │  ├─ models/                             # 🗃️ Mô hình cơ sở dữ liệu (định nghĩa ORM)
 │  │  ├─ __init__.py                      # 📦 Export các model
-│  │  ├─ user.py                          # 👤 Model người dùng (UUID, vai trò: user/admin)
+│  │  ├─ user.py                          # 👤 Model người dùng (ID chuỗi, vai trò: user/admin)
 │  │  ├─ movie.py                         # 🎬 Model phim (tiêu đề, thời lượng, đánh giá)
 │  │  ├─ genre.py                         # 🏷️ Model thể loại phim
 │  │  ├─ movie_genre.py                   # 🔗 Quan hệ nhiều-nhiều Movie ↔ Genre
@@ -269,14 +257,14 @@ backend/                                    # 📁 Thư mục gốc dự án Dja
 
 ### **🗃️ Các Model chính:**
 
-- **User** (`UUID`) - Xác thực + phân quyền theo vai trò (user/admin)
-- **Movie** (`UUID`) - Catalog phim với thể loại (quan hệ M2M)
-- **Auditorium** (`UUID`) - Phòng chiếu với cấu hình ghế ngồi
-- **Seat** (`UUID`) - Ghế đơn lẻ với bậc giá (thường/vip/đôi)
-- **Showtime** (`UUID`) - Phiên chiếu phim với phát hiện xung đột
-- **Booking** (`UUID`) - Đặt chỗ với **tự động hết hạn sau 10 phút**
-- **Ticket** (`UUID`) - Vé ghế đơn lẻ với định giá động
-- **Payment** (`UUID`) - Ghi nhận giao dịch với khả năng hoàn tiền
+- **User** (`char(32)`) - Xác thực + phân quyền theo vai trò (user/admin)
+- **Movie** (`char(32)`) - Catalog phim với thể loại (quan hệ M2M)
+- **Auditorium** (`char(32)`) - Phòng chiếu với cấu hình ghế ngồi
+- **Seat** (`char(32)`) - Ghế đơn lẻ với bậc giá (thường/vip/đôi)
+- **Showtime** (`char(32)`) - Phiên chiếu phim với phát hiện xung đột
+- **Booking** (`char(32)`) - Đặt chỗ với **tự động hết hạn sau 10 phút**
+- **Ticket** (`char(32)`) - Vé ghế đơn lẻ với định giá động
+- **Payment** (`char(32)`) - Ghi nhận giao dịch với khả năng hoàn tiền
 
 ### **🔗 Mối quan hệ chính:**
 
@@ -487,7 +475,7 @@ TIMEZONE = Asia/Ho_Chi_Minh
 
 ### **🛡️ Tính năng bảo mật:**
 
-- UUID primary key (không tuần tự, bảo mật)
+- Primary key chuỗi 32 ký tự (khớp với SQL Server hiện tại)
 - JWT blacklisting khi đăng xuất
 - Kiểm soát truy cập theo vai trò
 - Validation & sanitization đầu vào

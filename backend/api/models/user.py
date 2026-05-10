@@ -1,18 +1,21 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-import uuid
+
+from .utils import generate_char_id
 
 
 class User(AbstractUser):
     USER = "user"
-    ADMIN = "admin"  # SỬA TỪ SUPER_ADMIN thành ADMIN
+    STAFF = "staff"
+    ADMIN = "admin"
 
     ROLE_CHOICES = [
-        (USER, "User"),  # Thêm label cho dễ đọc
-        (ADMIN, "Admin"),  # Thêm label cho dễ đọc
+        (USER, "User"),
+        (STAFF, "Staff"),
+        (ADMIN, "Admin"),
     ]
 
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.CharField(primary_key=True, max_length=32, default=generate_char_id, editable=False)
     full_name = models.CharField(max_length=100, blank=True, null=True)
     email = models.EmailField(unique=True)
     phone = models.CharField(max_length=20, blank=True, null=True)
@@ -25,11 +28,15 @@ class User(AbstractUser):
 
     def is_admin_user(self):
         """Check user có phải admin không"""
-        return self.role == self.ADMIN or self.is_staff
+        return self.role == self.ADMIN or self.is_superuser
+
+    def is_branch_staff(self):
+        """Check user có phải nhân viên chi nhánh không"""
+        return self.role == self.STAFF
 
     def can_manage_cinema(self):
         """Check user có thể quản lý rạp không (CRUD movies, showtimes, auditoriums)"""
-        return self.is_admin_user()
+        return self.is_admin_user() or self.is_branch_staff()
 
     def can_view_all_bookings(self):
         """Check user có thể xem tất cả booking không"""

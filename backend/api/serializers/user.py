@@ -9,6 +9,32 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['id', 'username', 'email', 'full_name', 'phone', 'role', 'date_joined']
         read_only_fields = ['id', 'date_joined', 'role']
 
+
+class AdminUserSerializer(serializers.ModelSerializer):
+    """Serializer cho admin quản lý tài khoản"""
+
+    class Meta:
+        model = User
+        fields = [
+            'id',
+            'username',
+            'email',
+            'full_name',
+            'phone',
+            'role',
+            'is_active',
+            'date_joined',
+        ]
+        read_only_fields = ['id', 'date_joined']
+
+
+class UserProfileUpdateSerializer(serializers.ModelSerializer):
+    """Serializer cập nhật profile cá nhân"""
+
+    class Meta:
+        model = User
+        fields = ['email', 'full_name', 'phone', 'date_of_birth']
+
 class UserCreateSerializer(serializers.ModelSerializer):
     """Serializer cho đăng ký user mới"""
     password = serializers.CharField(write_only=True, min_length=8)

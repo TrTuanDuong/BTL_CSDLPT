@@ -3,6 +3,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django_filters.rest_framework import DjangoFilterBackend
+from api.permissions import IsBranchStaffOrCentralAdmin
 from ..models import Auditorium, Seat
 from ..serializers.auditorium import (
     AuditoriumSerializer, AuditoriumDetailSerializer, 
@@ -25,7 +26,7 @@ class AuditoriumViewSet(viewsets.ModelViewSet):
         if self.action in ['list', 'retrieve', 'seats']:
             permission_classes = [AllowAny]
         else:
-            permission_classes = [IsAuthenticated]
+            permission_classes = [IsBranchStaffOrCentralAdmin]
         return [permission() for permission in permission_classes]
     
     @action(detail=True, methods=['get'])
@@ -50,9 +51,9 @@ class AuditoriumViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['post'])
     def regenerate_seats(self, request, pk=None):
         """Tạo lại ghế cho phòng chiếu (xóa hết ghế cũ)"""
-        if not request.user.is_authenticated:
-            return Response({'error': 'Authentication required'}, 
-                          status=status.HTTP_401_UNAUTHORIZED)
+        if not (request.user.is_authenticated and request.user.role in ['admin', 'staff']):
+            return Response({'error': 'Bạn không có quyền thao tác chức năng này'},
+                          status=status.HTTP_403_FORBIDDEN)
         
         auditorium = self.get_object()
         

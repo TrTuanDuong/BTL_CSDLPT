@@ -163,15 +163,17 @@ export const AuthProvider = ({ children }) => {
   };
 
   // Kiểm tra admin: role='admin' HOẶC is_staff=true HOẶC is_superuser=true
-  // HOẶC username đặc biệt
   const isAdmin = user?.role === 'admin' || 
                   user?.is_staff === true || 
                   user?.is_superuser === true ||
                   user?.username === 'admin'; // Fallback cho superuser Django
 
+  const isStaff = user?.role === 'staff' || user?.is_staff === true;
+
   const value = {
     user,
     isAdmin,
+    isStaff,
     login,
     register,
     logout,

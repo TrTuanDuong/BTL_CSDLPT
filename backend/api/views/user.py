@@ -4,20 +4,33 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
 from api.models.user import User
+from api.permissions import IsCentralAdmin
 from api.serializers.user import (
-    UserSerializer, 
-    UserCreateSerializer, 
+    UserSerializer,
+    AdminUserSerializer,
+    UserCreateSerializer,
+    UserProfileUpdateSerializer,
     ChangePasswordSerializer
 )
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+    def get_queryset(self):
+        if not self.request.user.is_authenticated:
+            return User.objects.none()
+
+        if getattr(self.request.user, "role", None) == User.ADMIN or self.request.user.is_superuser:
+            return User.objects.all().order_by("-date_joined")
+        return User.objects.filter(id=self.request.user.id)
     
     def get_permissions(self):
         """Phân quyền theo action"""
-        if self.action in ['create']:
+        if self.action == 'create':
             permission_classes = [AllowAny]
+        elif self.action in ['list', 'retrieve', 'update', 'partial_update', 'destroy']:
+            permission_classes = [IsCentralAdmin]
         else:
             permission_classes = [IsAuthenticated]
         return [permission() for permission in permission_classes]
@@ -25,6 +38,10 @@ class UserViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action == 'create':
             return UserCreateSerializer
+        elif self.action in ['list', 'retrieve', 'update', 'partial_update']:
+            return AdminUserSerializer
+        elif self.action == 'update_profile':
+            return UserProfileUpdateSerializer
         elif self.action == 'change_password':
             return ChangePasswordSerializer
         return UserSerializer
@@ -68,7 +85,7 @@ class UserViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['put'])
     def update_profile(self, request):
         """Cập nhật thông tin profile"""
-        serializer = self.get_serializer(
+        serializer = UserProfileUpdateSerializer(
             request.user, 
             data=request.data, 
             partial=True

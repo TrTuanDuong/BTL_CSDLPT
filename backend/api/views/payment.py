@@ -6,6 +6,7 @@ from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db import models
 from datetime import timedelta
+from api.permissions import IsCentralAdmin, IsBranchStaffOrCentralAdmin
 from ..models import Payment, Booking
 from ..serializers.payment import (
     PaymentSerializer, PaymentCreateSerializer, PaymentDetailSerializer, RefundSerializer
@@ -41,6 +42,12 @@ class PaymentViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['post'])
     def refund(self, request, pk=None):
         """Hoàn tiền"""
+        if not IsBranchStaffOrCentralAdmin().has_permission(request, self):
+            return Response(
+                {'error': 'Chỉ staff hoặc admin mới có quyền hoàn tiền'},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
         payment = self.get_object()
         serializer = self.get_serializer(payment, data=request.data)
         
@@ -141,4 +148,32 @@ class PaymentViewSet(viewsets.ModelViewSet):
             'total_amount': total_amount,
             'payment_methods': payment_methods,
             'success_rate': (completed_payments / total_payments * 100) if total_payments > 0 else 0
+        })
+
+    @action(detail=False, methods=['get'], permission_classes=[IsCentralAdmin])
+    def system_statistics(self, request):
+        """Thống kê doanh thu toàn hệ thống (central admin)."""
+        all_payments = Payment.objects.all()
+
+        total_payments = all_payments.count()
+        completed_payments = all_payments.filter(status='completed').count()
+        refunded_payments = all_payments.filter(status='refunded').count()
+
+        from django.db.models import Sum
+
+        total_amount = all_payments.filter(status='completed').aggregate(
+            Sum('amount')
+        )['amount__sum'] or 0
+
+        payment_methods = all_payments.values('provider').annotate(
+            count=models.Count('id')
+        ).order_by('-count')
+
+        return Response({
+            'total_payments': total_payments,
+            'completed_payments': completed_payments,
+            'refunded_payments': refunded_payments,
+            'total_amount': total_amount,
+            'payment_methods': payment_methods,
+            'success_rate': (completed_payments / total_payments * 100) if total_payments > 0 else 0,
         })

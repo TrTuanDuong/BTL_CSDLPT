@@ -1,9 +1,10 @@
 from django.db import models
-import uuid
+
+from .utils import generate_char_id
 
 
 class Seat(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.CharField(primary_key=True, max_length=32, default=generate_char_id, editable=False)
     auditorium = models.ForeignKey(
         "api.Auditorium", on_delete=models.CASCADE, related_name="seats"
     )

@@ -80,6 +80,15 @@
   font-weight: bold;
 }
 
+.branch-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 999px;
+  color: white;
+  font-weight: 700;
+}
+
 .movie-description-detail h3 {
   font-size: 20px;
   margin-bottom: 12px;

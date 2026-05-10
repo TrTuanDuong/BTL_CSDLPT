@@ -20,7 +20,7 @@ class MovieSerializer(serializers.ModelSerializer):
 
 class MovieCreateSerializer(serializers.ModelSerializer):
     genre_ids = serializers.ListField(
-        child=serializers.UUIDField(),
+        child=serializers.CharField(max_length=32),
         write_only=True,
         required=False
     )

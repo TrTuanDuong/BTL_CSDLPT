@@ -85,8 +85,13 @@ DATABASES = {
         'NAME': 'ql_rap_phim',
         'USER': 'sa',
         'PASSWORD': '123456',
-        'HOST': '100.82.175.92',
+        'HOST': '100.112.30.20',
         'PORT': '1433',
+        'OPTIONS': {
+            'driver': 'ODBC Driver 18 for SQL Server',
+            'TrustServerCertificate': 'yes',
+            'Connection Timeout': 30,
+        },
     }
 }
 
@@ -136,7 +141,7 @@ AUTH_USER_MODEL = "api.User"
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'api.authentication.LegacyDatabaseJWTAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [

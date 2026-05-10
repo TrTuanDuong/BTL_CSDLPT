@@ -141,6 +141,16 @@ export const paymentsAPI = {
   refund: (id, data) => api.post(`/api/payments/${id}/refund/`, data),
   getReceipt: (id) => api.get(`/api/payments/${id}/receipt/`),
   getHistory: () => api.get('/api/payments/history/'),
+  systemStatistics: (params) => api.get('/api/payments/system_statistics/', { params }),
+};
+
+// Users API (admin)
+export const usersAPI = {
+  getAll: (params) => api.get('/api/users/', { params }),
+  getById: (id) => api.get(`/api/users/${id}/`),
+  create: (data) => api.post('/api/users/', data),
+  update: (id, data) => api.put(`/api/users/${id}/`, data),
+  delete: (id) => api.delete(`/api/users/${id}/`),
 };
 
 export default api;

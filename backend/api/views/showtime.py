@@ -12,6 +12,7 @@ from ..serializers.showtime import (
     ShowtimeCreateSerializer,
     ShowtimeDetailSerializer,
 )
+from api.permissions import IsCentralAdmin, IsBranchStaffOrCentralAdmin
 from django.db import models
 
 
@@ -40,7 +41,7 @@ class ShowtimeViewSet(viewsets.ModelViewSet):
         ]:
             permission_classes = [AllowAny]
         else:
-            permission_classes = [IsAuthenticated]
+            permission_classes = [IsBranchStaffOrCentralAdmin]
         return [permission() for permission in permission_classes]
 
     def get_queryset(self):
@@ -48,7 +49,7 @@ class ShowtimeViewSet(viewsets.ModelViewSet):
 
         # ✅ LOGIC MỚI: Chỉ hiển thị suất chiếu chưa bắt đầu (cho user)
         # Admin vẫn thấy tất cả
-        if not self.request.user.is_authenticated or not self.request.user.is_staff:
+        if not self.request.user.is_authenticated or getattr(self.request.user, "role", None) not in ["admin", "staff"]:
             # Lọc bỏ suất chiếu đã bắt đầu (start_time < now)
             queryset = queryset.filter(start_time__gte=timezone.now())
 
@@ -247,10 +248,10 @@ class ShowtimeViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=["get"])
     def bookings(self, request, pk=None):
-        """Xem danh sách booking cho suất chiếu (Admin only)"""
-        if not request.user.is_staff:
+        """Xem danh sách booking cho suất chiếu (staff/admin)"""
+        if not request.user.is_authenticated or getattr(request.user, "role", None) not in ["admin", "staff"]:
             return Response(
-                {"error": "Chỉ admin mới có thể xem thông tin này"},
+                {"error": "Chỉ staff hoặc admin mới có thể xem thông tin này"},
                 status=status.HTTP_403_FORBIDDEN,
             )
 
@@ -415,15 +416,9 @@ class ShowtimeViewSet(viewsets.ModelViewSet):
             }
         )
 
-    @action(detail=False, methods=["get"], permission_classes=[IsAuthenticated])
+    @action(detail=False, methods=["get"], permission_classes=[IsCentralAdmin])
     def admin_all(self, request):
         """✅ ADMIN: Xem tất cả showtime với trạng thái real-time"""
-        if not request.user.is_staff:
-            return Response(
-                {"error": "Chỉ admin mới có thể xem"},
-                status=status.HTTP_403_FORBIDDEN,
-            )
-
         # Lấy TẤT CẢ showtime (không filter)
         showtimes = (
             Showtime.objects.select_related("movie", "auditorium")

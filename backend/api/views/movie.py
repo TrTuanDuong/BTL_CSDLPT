@@ -5,6 +5,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from django_filters.rest_framework import DjangoFilterBackend
 from django.utils import timezone
 from django.db.models import Q, Exists, OuterRef
+from api.permissions import IsCentralAdmin
 from ..models import Movie, Genre, Showtime
 from ..serializers.movie import MovieSerializer, MovieCreateSerializer, GenreSerializer
 
@@ -48,12 +49,19 @@ class MovieViewSet(viewsets.ModelViewSet):
         if self.action in ["list", "retrieve"]:
             permission_classes = [AllowAny]
         else:
-            permission_classes = [IsAuthenticated]
+            permission_classes = [IsCentralAdmin]
         return [permission() for permission in permission_classes]
 
 
 class GenreViewSet(viewsets.ModelViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsCentralAdmin]
     ordering = ["name"]
+
+    def get_permissions(self):
+        if self.action in ["list", "retrieve"]:
+            permission_classes = [AllowAny]
+        else:
+            permission_classes = [IsCentralAdmin]
+        return [permission() for permission in permission_classes]

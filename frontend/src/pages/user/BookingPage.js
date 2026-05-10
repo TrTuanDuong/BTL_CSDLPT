@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { showtimesAPI, bookingsAPI } from '../../services/api';
+import { useBranch } from '../../contexts/BranchContext';
 import '../../styles/Booking.css';
 
 const BookingPage = () => {
   const { showtimeId } = useParams();
   const navigate = useNavigate();
+  const { selectedBranch } = useBranch();
   
   const [showtime, setShowtime] = useState(null);
   const [seatsByRow, setSeatsByRow] = useState({});
@@ -84,11 +86,9 @@ const handleBooking = async () => {
     const response = await bookingsAPI.create(bookingData);
     console.log('Booking response:', response.data);
     
-    // ⭐ SỬA: Thử nhiều cách lấy booking ID
     const bookingId = response?.data?.id || 
                       response?.data?.booking_id || 
-                      response?.data?.pk ||
-                      response?.data?.uuid;
+                      response?.data?.pk;
     
     if (!bookingId) {
       // Nếu không có ID, lấy từ headers hoặc fetch lại
@@ -170,6 +170,11 @@ const handleBooking = async () => {
               {showtime?.auditorium_name} •{' '}
               {new Date(showtime?.start_time).toLocaleString('vi-VN')}
             </p>
+          </div>
+          <div className="booking-branch-card">
+            <span className="eyebrow">Chi nhánh đặt vé</span>
+            <strong>{selectedBranch.name}</strong>
+            <small>{selectedBranch.address}</small>
           </div>
         </div>
 

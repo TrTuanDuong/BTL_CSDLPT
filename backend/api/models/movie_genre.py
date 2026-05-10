@@ -1,6 +1,7 @@
 from django.db import models
 
 class MovieGenre(models.Model):
+    id = models.BigAutoField(primary_key=True)
     movie = models.ForeignKey("api.Movie", on_delete=models.CASCADE)
     genre = models.ForeignKey("api.Genre", on_delete=models.CASCADE)
 

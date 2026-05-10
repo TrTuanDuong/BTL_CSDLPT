@@ -18,10 +18,22 @@ import AdminMovies from './pages/admin/AdminMovies';
 import AdminGenres from './pages/admin/AdminGenres';
 import AdminAuditoriums from './pages/admin/AdminAuditoriums';
 import AdminShowtimes from './pages/admin/AdminShowtimes';
+import AdminBranches from './pages/admin/AdminBranches';
+import AdminBranchReports from './pages/admin/AdminBranchReports';
+import AdminStaffAssignments from './pages/admin/AdminStaffAssignments';
+import AdminUsers from './pages/admin/AdminUsers';
+import AdminReports from './pages/admin/AdminReports';
 
 // Layouts
 import UserLayout from './components/layout/UserLayout';
 import AdminLayout from './components/layout/AdminLayout';
+import StaffLayout from './components/layout/StaffLayout';
+
+// Staff Pages
+import StaffDashboard from './pages/staff/StaffDashboard';
+import StaffShowtimes from './pages/staff/StaffShowtimes';
+import StaffBookings from './pages/staff/StaffBookings';
+import StaffPayments from './pages/staff/StaffPayments';
 
 import './styles/App.css';
 
@@ -45,6 +57,17 @@ const AdminRoute = ({ children }) => {
   }
   
   return user && isAdmin ? children : <Navigate to="/" />;
+};
+
+// Protected Route cho Staff (hoặc Admin)
+const StaffRoute = ({ children }) => {
+  const { user, isStaff, isAdmin, loading } = useAuth();
+
+  if (loading) {
+    return <div className="loading-screen">Đang tải...</div>;
+  }
+
+  return user && (isStaff || isAdmin) ? children : <Navigate to="/" />;
 };
 
 function App() {
@@ -92,6 +115,18 @@ function App() {
           } />
         </Route>
 
+        {/* Staff Routes */}
+        <Route path="/staff" element={
+          <StaffRoute>
+            <StaffLayout />
+          </StaffRoute>
+        }>
+          <Route index element={<StaffDashboard />} />
+          <Route path="showtimes" element={<StaffShowtimes />} />
+          <Route path="bookings" element={<StaffBookings />} />
+          <Route path="payments" element={<StaffPayments />} />
+        </Route>
+
         {/* Admin Routes */}
         <Route path="/admin" element={
           <AdminRoute>
@@ -103,6 +138,11 @@ function App() {
           <Route path="genres" element={<AdminGenres />} />
           <Route path="auditoriums" element={<AdminAuditoriums />} />
           <Route path="showtimes" element={<AdminShowtimes />} />
+          <Route path="branches" element={<AdminBranches />} />
+          <Route path="branch-reports" element={<AdminBranchReports />} />
+          <Route path="staff" element={<AdminStaffAssignments />} />
+          <Route path="users" element={<AdminUsers />} />
+          <Route path="reports" element={<AdminReports />} />
         </Route>
 
         {/* 404 */}

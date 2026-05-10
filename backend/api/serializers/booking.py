@@ -98,7 +98,7 @@ class BookingSerializer(serializers.ModelSerializer):
 
 class BookingCreateSerializer(serializers.ModelSerializer):
     seat_ids = serializers.ListField(
-        child=serializers.UUIDField(), write_only=True, min_length=1, max_length=10
+        child=serializers.CharField(max_length=32), write_only=True, min_length=1, max_length=10
     )
 
     class Meta:

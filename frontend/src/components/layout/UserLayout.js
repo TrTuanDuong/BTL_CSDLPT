@@ -1,10 +1,12 @@
 import React from 'react';
 import { Outlet, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import { useBranch } from '../../contexts/BranchContext';
 import '../../styles/Layout.css';
 
 const UserLayout = () => {
   const { user, isAdmin, logout } = useAuth();
+  const { branches, selectedBranch, setBranchId } = useBranch();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -35,6 +37,21 @@ const UserLayout = () => {
                 </Link>
               )}
             </nav>
+
+            <div className="branch-switcher">
+              <label htmlFor="branch-selector">Chi nhánh</label>
+              <select
+                id="branch-selector"
+                value={selectedBranch?.id || ''}
+                onChange={(e) => setBranchId(e.target.value)}
+              >
+                {branches.map((branch) => (
+                  <option key={branch.id} value={branch.id}>
+                    {branch.name}
+                  </option>
+                ))}
+              </select>
+            </div>
 
             <div className="auth-section">
               {user ? (

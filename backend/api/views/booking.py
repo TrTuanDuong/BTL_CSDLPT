@@ -5,6 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend
 from datetime import timedelta
+from api.permissions import IsBranchStaffOrCentralAdmin
 from ..models import Booking, Ticket, Showtime
 from ..serializers.booking import (
     BookingSerializer,
@@ -109,6 +110,12 @@ class TicketViewSet(viewsets.ReadOnlyModelViewSet):
     @action(detail=True, methods=["post"])
     def check_in(self, request, pk=None):
         """Check-in vé tại rạp"""
+        if not IsBranchStaffOrCentralAdmin().has_permission(request, self):
+            return Response(
+                {"error": "Chỉ staff hoặc admin mới có quyền check-in"},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
         ticket = self.get_object()
 
         if ticket.status != "paid":

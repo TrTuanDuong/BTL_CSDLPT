@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { moviesAPI, showtimesAPI } from '../../services/api';
+import { useBranch } from '../../contexts/BranchContext';
 import '../../styles/MovieDetail.css';
 
 const MovieDetailPage = () => {
@@ -11,6 +12,7 @@ const MovieDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [selectedDate, setSelectedDate] = useState('');
+  const { selectedBranch } = useBranch();
 
   useEffect(() => {
     fetchMovieDetails();
@@ -96,6 +98,12 @@ const MovieDetailPage = () => {
               <h1 className="movie-title">{movie.title}</h1>
               
               <div className="movie-meta-detail">
+                <div className="meta-item">
+                  <span className="meta-label">Chi nhánh:</span>
+                  <span className="meta-value rating-badge" style={{ background: selectedBranch.color }}>
+                    {selectedBranch.name}
+                  </span>
+                </div>
                 {movie.rating && (
                   <div className="meta-item">
                     <span className="meta-label">Phân loại:</span>

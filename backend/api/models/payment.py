@@ -1,5 +1,6 @@
 from django.db import models
-import uuid
+
+from .utils import generate_char_id
 
 
 class Payment(models.Model):
@@ -27,7 +28,7 @@ class Payment(models.Model):
         (BANK_TRANSFER, "Bank Transfer"),
     ]
 
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.CharField(primary_key=True, max_length=32, default=generate_char_id, editable=False)
     booking = models.OneToOneField(
         "api.Booking", on_delete=models.CASCADE, related_name="payment"
     )

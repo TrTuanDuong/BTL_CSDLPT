@@ -335,6 +335,26 @@
   box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
 }
 
+.booking-branch-card {
+  margin-top: 16px;
+  padding: 16px 18px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #eef2ff 0%, #f8fafc 100%);
+  border: 1px solid #dbe3ff;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.booking-branch-card strong {
+  font-size: 18px;
+  color: #1f2937;
+}
+
+.booking-branch-card small {
+  color: #64748b;
+}
+
 .btn-continue:disabled {
   opacity: 0.5;
   cursor: not-allowed;
